@@ -41,7 +41,7 @@ loginWithMojang = "Se connecter avec Mojang"
 cancelButton = "Annuler"
 
 [ejs.overlay]
-serverSelectHeader = "Serveurs disponible"
+serverSelectHeader = "Serveurs disponibles"
 serverSelectConfirm = "Choisir"
 serverSelectCancel = "Annuler"
 accountSelectHeader = "Choisir un compte"
@@ -196,6 +196,7 @@ errorDuringFileDownloadTitle = "Erreur lors du téléchargement des fichiers"
 preparingToLaunch = "Préparation au lancement.."
 launchingGame = "Lancement du jeu..."
 launchWrapperNotDownloaded = "Le fichier principal, LaunchWrapper, n'est pas téléchargé proprement. Le jeu ne peut donc pas se lancer.<br><br>Pour résoudre ce problème, désactivez temporairement votre logiciel antivirus et relancez le jeu.<br><br>Si vous avez le temps, veuillez ouvrir un ticket de support sur Discord"
+doneEnjoyServer = "Bon jeu !"
 checkConsoleForDetails = "Please check the console (CTRL + Shift + i) for more details."
 
 [js.landing.news]

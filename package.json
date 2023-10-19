@@ -2,10 +2,10 @@
   "name": "lunexlauncher",
   "version": "0.0.4",
   "productName": "Lunex Launcher",
-  "description": "Lunex Minecraft Launcher",
+  "description": "Launcher de Lunex",
   "author": "ci2bx (https://github.com/ci2bx/)",
   "license": "UNLICENSED",
-  "homepage": "https://github.com/ci2bx/Lunex",
+  "homepage": "https://github.com/ci2bx/LunexLauncher",
   "bugs": {
     "url": "https://github.com/ci2bx/LunexLauncher/issues"
   },

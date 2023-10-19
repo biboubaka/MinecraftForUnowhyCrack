@@ -3165,10 +3165,19 @@ input:checked + .toggleSwitchSlider:before {
 /* Youtube icon colors. */
 #youtubeSVG:hover,
 #youtubeURL:focus #youtubeSVG {
-    fill: #f00;
+    fill: #d400ff;
+    height: 30;
 }
 #youtubeSVG:active {
-    fill: #ea0202;
+    fill: #81009b;
+}
+
+#youtubeSVG {
+    height: 17;
+}
+
+#youtubeSVG:hover {
+    height: 28;
 }
 
 /* Discord icon colors. */
