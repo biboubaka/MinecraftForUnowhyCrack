@@ -147,9 +147,22 @@ document.getElementById('avatarOverlay').onclick = async e => {
 function updateSelectedAccount(authUser){
     let username = Lang.queryJS('landing.selectedAccount.noAccountSelected')
     if(authUser != null){
+
         if(authUser.displayName != null){
             username = authUser.displayName
+
+            if(authUser.uuid == "4bbdf5ef8cc94f59a69eb96d0eafaa3e"){// Guigame
+                username = "👑" + authUser.displayName;
+            }
+            if(authUser.uuid == "dc47c29b048c4f069199f8f9ea9554df"){// Tchoupi le boss
+                username = "👑" + authUser.displayName;
+            }            
+            if(authUser.uuid == "f88fd6e1d33d440f87554630dd67db81"){// mayline42
+                username = "👑" + authUser.displayName;
+            }
         }
+
+
         if(authUser.uuid != null){
             document.getElementById('avatarContainer').style.backgroundImage = `url('https://mc-heads.net/body/${authUser.uuid}/right')`
         }
@@ -291,7 +304,7 @@ function showLaunchFailure(title, desc){
     setOverlayHandler(null)
     toggleOverlay(true)
     toggleLaunchArea(false)
-}
+} 
 
 /* System (Java) Scan */
 
