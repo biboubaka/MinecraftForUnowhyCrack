@@ -1,11 +1,12 @@
-<p align="center"><img src="./app/assets/images/SealCircle.png" width="150px" height="150px" alt="aventium softworks"></p>
+<p align="center"><img src="./app/assets/images/LunexLogoWide.png" height="150px" alt="lunex"></p>
 
 <h1 align="center">Lunex Launcher</h1>
 
-<em><h5 align="center">based on <a href="https://github.com/dscalzi/helioslauncher">Helios Launcher</a></h5></em>
+<em><h5 align="center">basé sur <a href="https://github.com/dscalzi/helioslauncher">Helios Launcher</a></h5></em>
 
 
-<p align="center">Join modded servers without worrying about installing Java, Forge, or other mods. We'll handle that for you.</p>
+<p align="center">Rejoignez Lunex en toute simplicitée.</p>
+<a href="https://www.lunexmc.fr/" align="center">www.lunexmc.fr</a>
 
 ![Screenshot 1](https://i.imgur.com/6o7SmH6.png)
 ![Screenshot 2](https://i.imgur.com/x3B34n1.png)
