@@ -9,5 +9,5 @@
 <p align="center"><a href="https://www.lunexmc.fr/" >www.lunexmc.fr</a></p>
 
 ![Screenshot 1](https://i.imgur.com/6o7SmH6.png)
-![Screenshot 2](https://i.imgur.com/x3B34n1.png)
+![Screenshot 2](https://i.imgur.com/o9wseYU.png)
 
