@@ -1,4 +1,4 @@
-<p align="center"><img src="./app/assets/images/LunexLogoWide.png" height="150px" alt="lunex"></p>
+<p align="center"><img src="https://github.com/LunexMC/LunexLauncher/raw/main/app/assets/images/LunexLogoWide.png" height="150px" alt="lunex"></p>
 
 <h1 align="center">Lunex Launcher</h1>
 
