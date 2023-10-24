@@ -8,6 +8,6 @@
 <p align="center">Rejoignez Lunex en toute simplicitée.</p>
 <p align="center"><a href="https://www.lunexmc.fr/" >www.lunexmc.fr</a></p>
 
-![Screenshot 1](https://i.imgur.com/6o7SmH6.png)
+![Screenshot 1](https://i.imgur.com/dwBTF6C.png)
 ![Screenshot 2](https://i.imgur.com/o9wseYU.png)
 
