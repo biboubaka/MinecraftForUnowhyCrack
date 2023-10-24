@@ -6,7 +6,7 @@
 
 
 <p align="center">Rejoignez Lunex en toute simplicitée.</p>
-<a href="https://www.lunexmc.fr/" align="center">www.lunexmc.fr</a>
+<p align="center"><a href="https://www.lunexmc.fr/" >www.lunexmc.fr</a></p>
 
 ![Screenshot 1](https://i.imgur.com/6o7SmH6.png)
 ![Screenshot 2](https://i.imgur.com/x3B34n1.png)
