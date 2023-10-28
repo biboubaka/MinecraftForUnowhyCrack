@@ -160,6 +160,9 @@ function updateSelectedAccount(authUser){
             if(authUser.uuid == "f88fd6e1d33d440f87554630dd67db81"){// mayline42
                 username = "👑" + authUser.displayName;
             }
+            if(authUser.uuid == "6ac7b55eb6c547caa0b034904a74cb82"){// Flodurigolo
+                username = "🥔" + authUser.displayName;
+            }
         }
 
 
