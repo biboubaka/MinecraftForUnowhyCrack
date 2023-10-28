@@ -106,7 +106,7 @@ selectDataDirectory = "Choisir le dossier des données"
 chooseFolder = "Choisir un dossier"
 dataDirectoryDesc = "Tout les fichiers du jeu anisi que l'installation locale de Java seront stockés dans le dossier des données.<br>Les captures d'écrans seront stocké dans le dossier spéde la configuration correpondante."
 aboutTabHeaderText = "A propos"
-aboutTabHeaderDesc = "View information and release notes for the current version."
+aboutTabHeaderDesc = "Voir les informations et les notes de version pour cette version."
 aboutTitle = "{appName}"
 stableRelease = "Version stable"
 versionText = "Version "
@@ -121,7 +121,7 @@ launcherUpdatesHeaderText = "Mise a jour du Launcher"
 launcherUpdatesHeaderDesc = "Télécharger et installer les mises a jour du launcher."
 checkForUpdates = "Verifier les mises a jour"
 whatsNew = "Nouvautés"
-updateReleaseNotes = "Update Release Notes"
+updateReleaseNotes = "Mettre a jour les notes de version."
 
 [ejs.waiting]
 waitingText = "En attente de Microsoft..."
@@ -131,8 +131,8 @@ continueButton = "CONTINUER"
 
 
 [js.login]
-login = "CONNECTION"
-loggingIn = "CONNECTION EN COURS"
+login = "CONNEXION"
+loggingIn = "CONNEXION EN COURS"
 success = "SUCCÈS"
 tryAgain = "Réessayer"
 
@@ -165,7 +165,7 @@ players = "JOUEURS"
 [js.landing.systemScan]
 checking = "Verification de votre système.."
 noCompatibleJava = "Aucune version<br>compatible de Java"
-installJavaMessage = "Pour jouer sur Lunex, vous avez besoin d'une installation 64-bit de Java{major}. Voulez-vous l'installez ?"
+installJavaMessage = "Pour jouer sur Lunex, vous avez besoin d'une installation 64-bit de Java {major}. Voulez-vous l'installez ?"
 installJava = "Installer Java"
 installJavaManually = "Installer Manuellement"
 javaDownloadPrepare = "Perparation du téléchargement de Java..."
