@@ -1,4 +1,4 @@
-<p align="center"><img src="./app/assets/images/LunexLogoWide.png" height="150px" alt="lunex"></p>
+<p align="center"><img src="https://github.com/LunexMC/LunexLauncher/raw/main/app/assets/images/LunexLogoWide.png" width=75% alt="lunex"></p>
 
 <h1 align="center">Lunex Launcher</h1>
 
@@ -6,8 +6,8 @@
 
 
 <p align="center">Rejoignez Lunex en toute simplicitée.</p>
-<a href="https://www.lunexmc.fr/" align="center">www.lunexmc.fr</a>
+<p align="center"><a href="https://www.lunexmc.fr/" >www.lunexmc.fr</a></p>
 
-![Screenshot 1](https://i.imgur.com/6o7SmH6.png)
-![Screenshot 2](https://i.imgur.com/x3B34n1.png)
+![Screenshot 1](https://i.imgur.com/dwBTF6C.png)
+![Screenshot 2](https://i.imgur.com/o9wseYU.png)
 

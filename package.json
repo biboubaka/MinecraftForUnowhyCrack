@@ -1,13 +1,13 @@
 {
   "name": "lunexlauncher",
-  "version": "0.0.6",
+  "version": "0.1.1",
   "productName": "Lunex Launcher",
   "description": "Launcher de Lunex",
   "author": "ci2bx (https://github.com/ci2bx/)",
   "license": "UNLICENSED",
-  "homepage": "https://github.com/ci2bx/LunexLauncher",
+  "homepage": "https://github.com/LunexMC/LunexLauncher",
   "bugs": {
-    "url": "https://github.com/ci2bx/LunexLauncher/issues"
+    "url": "https://github.com/LunexMC/LunexLauncher/issues"
   },
   "private": true,
   "main": "index.js",
@@ -46,6 +46,6 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ci2bx/LunexLauncher.git"
+    "url": "git+https://github.com/LunexMC/LunexLauncher.git"
   }
 }

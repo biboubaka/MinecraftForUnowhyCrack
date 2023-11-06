@@ -23,10 +23,10 @@ loginCancelText = "Annuler"
 loginSubheader = "MINECRAFT LOGIN"
 loginEmailError = "* Invalid Value"
 loginEmailPlaceholder = "EMAIL OR USERNAME"
-loginPasswordError = "* Required"
-loginPasswordPlaceholder = "PASSWORD"
+loginPasswordError = "* REQUIS"
+loginPasswordPlaceholder = "MOT DE PASSE"
 loginForgotPasswordLink = "https://minecraft.net/password/forgot/"
-loginForgotPasswordText = "mot de passe oublié"
+loginForgotPasswordText = "Mot de passe oublié"
 loginRememberMeText = "Se souvenir de moi?"
 loginButtonText = "CONNECTION"
 loginNeedAccountLink = "https://minecraft.net/store/minecraft-java-edition/"
@@ -35,7 +35,7 @@ loginPasswordDisclaimer1 = "Votre mot de passe est directement envoyé a Mojang 
 loginPasswordDisclaimer2 = "{appName} n'est pas affilié avec Mojang AB."
 
 [ejs.loginOptions]
-loginOptionsTitle = "Options de connection"
+loginOptionsTitle = "Options de connexion"
 loginWithMicrosoft = "Se connecter avec Microsoft"
 loginWithMojang = "Se connecter avec Mojang"
 cancelButton = "Annuler"
@@ -106,7 +106,7 @@ selectDataDirectory = "Choisir le dossier des données"
 chooseFolder = "Choisir un dossier"
 dataDirectoryDesc = "Tout les fichiers du jeu anisi que l'installation locale de Java seront stockés dans le dossier des données.<br>Les captures d'écrans seront stocké dans le dossier spéde la configuration correpondante."
 aboutTabHeaderText = "A propos"
-aboutTabHeaderDesc = "View information and release notes for the current version."
+aboutTabHeaderDesc = "Voir les informations et les notes de version pour cette version."
 aboutTitle = "{appName}"
 stableRelease = "Version stable"
 versionText = "Version "
@@ -121,7 +121,7 @@ launcherUpdatesHeaderText = "Mise a jour du Launcher"
 launcherUpdatesHeaderDesc = "Télécharger et installer les mises a jour du launcher."
 checkForUpdates = "Verifier les mises a jour"
 whatsNew = "Nouvautés"
-updateReleaseNotes = "Update Release Notes"
+updateReleaseNotes = "Mettre a jour les notes de version."
 
 [ejs.waiting]
 waitingText = "En attente de Microsoft..."
@@ -131,8 +131,8 @@ continueButton = "CONTINUER"
 
 
 [js.login]
-login = "CONNECTION"
-loggingIn = "CONNECTION EN COURS"
+login = "CONNEXION"
+loggingIn = "CONNEXION EN COURS"
 success = "SUCCÈS"
 tryAgain = "Réessayer"
 
@@ -141,7 +141,7 @@ invalidValue = "* Valeur invalide"
 requiredValue = "* Requis"
 
 [js.login.error.unknown]
-title = "Erreur inconnue pendent la connection"
+title = "Erreur inconnue pendent la connexion"
 desc = "Une erreur inconnue est survenue. Veuillez ouvrir un ticket de support sur Discord"
 
 [js.landing.launch]
@@ -165,7 +165,7 @@ players = "JOUEURS"
 [js.landing.systemScan]
 checking = "Verification de votre système.."
 noCompatibleJava = "Aucune version<br>compatible de Java"
-installJavaMessage = "Pour jouer sur Lunex, vous avez besoin d'une installation 64-bit de Java{major}. Voulez-vous l'installez ?"
+installJavaMessage = "Pour jouer sur Lunex, vous avez besoin d'une installation 64-bit de Java {major}. Voulez-vous l'installez ?"
 installJava = "Installer Java"
 installJavaManually = "Installer Manuellement"
 javaDownloadPrepare = "Perparation du téléchargement de Java..."
@@ -213,7 +213,7 @@ okButton = "OK"
 
 [js.settings.mstfLogout]
 errorTitle = "Une erreur est survenue"
-errorMessage = "La déconnection à votre compte Microsoft à échouée. Veuillez réessayer."
+errorMessage = "La déconnexion à votre compte Microsoft à échouée. Veuillez réessayer."
 okButton = "OK"
 
 [js.settings.authAccountSelect]
@@ -231,7 +231,7 @@ username = "Nom d'utilisateur"
 uuid = "UUID"
 selectAccount = "Selectionez un compte"
 selectedAccount = "Compte sélectionné ✓"
-logout = "Déconnection"
+logout = "Déconnexion"
 
 [js.settings.dropinMods]
 removeButton = "Retirer"
@@ -246,7 +246,7 @@ mainServer = "Serveur principal"
 [js.settings.java]
 selectedJava = "Sélectionné: Java {version} ({vendor})"
 invalidSelection = "Séléction invalide"
-requiresJava = "Requière Java {major} x64."
+requiresJava = "Requiert Java {major} x64."
 availableOptions = "Options disponible pour Java {major} (HotSpot VM)"
 
 [js.settings.about]
@@ -265,14 +265,14 @@ checkingForUpdatesButton = "Vérification des mises à jour..."
 
 [js.uibinder.startup]
 fatalErrorTitle = "Erreur fatale lors du téléchargement de l'index des ressources"
-fatalErrorMessage = "La connection à nos serveurs n'a pas pu être établiee pour télécharger les ressources. Aucune copie locale n'a été trouvée. <br><br>L'index des ressources est un fichier essentiel qui vous donnes les dernière informations de Lunex. Le launcher ne peut pas démmarer sans. Verifier votre connection a Internet et relancer le launcher."
+fatalErrorMessage = "La connexion à nos serveurs n'a pas pu être établiee pour télécharger les ressources. Aucune copie locale n'a été trouvée. <br><br>L'index des ressources est un fichier essentiel qui vous donnes les dernière informations de Lunex. Le launcher ne peut pas démmarer sans. Verifier votre connexion a Internet et relancer le launcher."
 closeButton = "Fermer"
 
 [js.uibinder.validateAccount]
-failedMessageTitle = "Imposible d'actualiser la connection."
-failedMessage = "Nous sommes imposible d'actualiser la connection pour <strong>{account}</strong>. Choisissez un autre compte ou connectez-vous a nouveau."
-failedMessageSelectAnotherAccount = "Nous sommes imposible d'actualiser la connection pour <strong>{account}</strong>. Connectez-vous a nouveau."
-loginButton = "Connection"
+failedMessageTitle = "Imposible d'actualiser la connexion."
+failedMessage = "Nous sommes imposible d'actualiser la connexion pour <strong>{account}</strong>. Choisissez un autre compte ou connectez-vous a nouveau."
+failedMessageSelectAnotherAccount = "Nous sommes imposible d'actualiser la connexion pour <strong>{account}</strong>. Connectez-vous a nouveau."
+loginButton = "Connexion"
 selectAnotherAccountButton = "Choisir un autre compte"
 
 [js.uicore.autoUpdate]
