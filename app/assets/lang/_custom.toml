@@ -8,7 +8,7 @@ mediaGitHubURL = "https://github.com/ci2bx/LunexLauncher"
 mediaTwitterURL = "#"
 mediaInstagramURL = "#"
 mediaWebsiteURL = "https://www.lunexmc.fr/"
-mediaYouTubeURL = "https://www.lunexmc.fr/shop"
+mediaYouTubeURL = "https://www.lunexmc.fr/boutique"
 mediaDiscordURL = "https://discord.com/invite/Fm9NNVzqxx"
 
 [ejs.settings]
