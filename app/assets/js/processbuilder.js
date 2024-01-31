@@ -486,6 +486,7 @@ class ProcessBuilder {
                             break
                         case 'user_type':
                             val = this.authUser.type === 'microsoft' ? 'msa' : 'mojang'
+                            console.log(this.authUser.type)
                             break
                         case 'version_type':
                             val = this.versionData.type

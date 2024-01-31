@@ -29,13 +29,21 @@ const log = LoggerUtil.getLogger('AuthManager')
  * @param {string} password The account password.
  * @returns {Promise.<Object>} Promise which resolves the resolved authenticated account object.
  */
-exports.addMojangAccount = async function(username, password) {
+exports.addAccount = async function(username, password){
     try {
-        const response = await MojangRestAPI.authenticate(username, password, ConfigManager.getClientToken())
-        console.log(response)
-        if(response.responseStatus === RestResponseStatus.SUCCESS) {
-
-            const session = response.data
+        if(username.endsWith('.lunex')){
+            let c = '';
+            for (let d = 0; d < 10; d++) {
+                c += 'abcdefghijklmnopqrstuvwxyz1234567890'[Math.floor(Math.random() * 'abcdefghijklmnopqrstuvwxyz1234567890'.length)];
+            }
+            const ret = ConfigManager.addMojangAuthAccount('nope_' + c, 'sry', username, username)
+            if(ConfigManager.getClientToken() == null){
+                ConfigManager.setClientToken('sry')
+            }
+            ConfigManager.save()
+            return ret
+        }else{
+            const session = await Mojang.authenticate(username, password, ConfigManager.getClientToken())
             if(session.selectedProfile != null){
                 const ret = ConfigManager.addMojangAuthAccount(session.selectedProfile.id, session.accessToken, username, session.selectedProfile.name)
                 if(ConfigManager.getClientToken() == null){
@@ -44,16 +52,11 @@ exports.addMojangAccount = async function(username, password) {
                 ConfigManager.save()
                 return ret
             } else {
-                return Promise.reject(mojangErrorDisplayable(MojangErrorCode.ERROR_NOT_PAID))
+                throw new Error('NotPaidAccount')
             }
-
-        } else {
-            return Promise.reject(mojangErrorDisplayable(response.mojangErrorCode))
         }
-        
     } catch (err){
-        log.error(err)
-        return Promise.reject(mojangErrorDisplayable(MojangErrorCode.UNKNOWN))
+        return Promise.reject(err)
     }
 }
 

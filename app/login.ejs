@@ -28,9 +28,6 @@
                 <input id="loginPassword" class="loginField" type="password" placeholder="<%- lang('login.loginPasswordPlaceholder') %>"/>
             </div>
             <div id="loginOptions">
-                <span class="loginSpanDim">
-                    <a href="<%- lang('login.loginForgotPasswordLink') %>"><%- lang('login.loginForgotPasswordText') %></a>
-                </span>
                 <label id="checkmarkContainer">
                     <input id="loginRememberOption" type="checkbox" checked>
                     <span id="loginRememberText" class="loginSpanDim"><%- lang('login.loginRememberMeText') %></span>
@@ -53,10 +50,6 @@
                 </div>
             </button>
             <div id="loginDisclaimer">
-                <span class="loginSpanDim" id="loginRegisterSpan">
-                    <a href="<%- lang('login.loginNeedAccountLink') %>"><%- lang('login.loginNeedAccountText') %></a>
-                </span>
-                <p class="loginDisclaimerText"><%- lang('login.loginPasswordDisclaimer1') %></p>
                 <p class="loginDisclaimerText"><%- lang('login.loginPasswordDisclaimer2', { appName: lang('app.title') }) %></p>
             </div>
         </form>

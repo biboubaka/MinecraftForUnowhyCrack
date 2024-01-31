@@ -273,6 +273,17 @@ exports.setClientToken = function(clientToken){
     config.clientToken = clientToken
 }
 
+exports.addAuthAccount = function(uuid, accessToken, username, displayName){
+    config.selectedAccount = uuid
+    config.authenticationDatabase[uuid] = {
+        accessToken,
+        username: username.trim(),
+        uuid: uuid.trim(),
+        displayName: displayName.trim()
+    }
+    return config.authenticationDatabase[uuid]
+}
+
 /**
  * Retrieve the ID of the selected serverpack.
  * 
