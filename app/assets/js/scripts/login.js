@@ -21,6 +21,8 @@ const loginForm             = document.getElementById('loginForm')
 // Control variables.
 let lu = false, lp = false
 
+const loggerLogin = LoggerUtil1('%c[Login]', 'color: #000668; font-weight: bold')
+
 
 /**
  * Show a login error.
@@ -45,44 +47,29 @@ function shakeError(element){
         element.classList.add('shake')
     }
 }
-/*
+
 /**
  * Validate that an email field is neither empty nor invalid.
  * 
  * @param {string} value The email value.
  */
-
-/*function validateEmail(value){
-*    if(value){
-*        if(!basicEmail.test(value) && !validUsername.test(value)){
-*            showError(loginEmailError, Lang.queryJS('login.error.invalidValue'))
-*            loginDisabled(true)
-*            lu = false
-*        } else {
-*            loginEmailError.style.opacity = 0
-*            lu = true
-*            if(lp){
-*                loginDisabled(false)
-*            }
-*        }
-*    } else {
-*        lu = false
-*        showError(loginEmailError, Lang.queryJS('login.error.requiredValue'))
-*        loginDisabled(true)
-*    }
-}*/
-
 function validateEmail(value){
-    if(value.endsWith(".lunex")){
-        loginEmailError.style.opacity = 0
-        lu = true
+    if(value){
+        if(!basicEmail.test(value) && !validUsername.test(value)){
+            showError(loginEmailError, Lang.queryJS('login.error.invalidValue'))
+            loginDisabled(true)
+            lu = false
+        } else {
+            loginEmailError.style.opacity = 0
+            lu = true
             if(lp){
                 loginDisabled(false)
             }
+        }
     } else {
-        showError(loginEmailError, Lang.queryJS('login.error.invalidValue'))
-        loginDisabled(true)
         lu = false
+        showError(loginEmailError, Lang.queryJS('login.error.requiredValue'))
+        loginDisabled(true)
     }
 }
 
@@ -202,18 +189,16 @@ loginButton.addEventListener('click', () => {
     // Show loading stuff.
     loginLoading(true)
 
-    if(loginPassword.value == btoa(loginUsername.value)){
-
-    AuthManager.addAccount(loginUsername.value, loginPassword.value).then((value) => {
+    AuthManager.addMojangAccount(loginUsername.value, loginPassword.value).then((value) => {
         updateSelectedAccount(value)
         loginButton.innerHTML = loginButton.innerHTML.replace(Lang.queryJS('login.loggingIn'), Lang.queryJS('login.success'))
         $('.circle-loader').toggleClass('load-complete')
         $('.checkmark').toggle()
         setTimeout(() => {
-            switchView(VIEWS.login, loginViewOnSuccess, 500, 500, async () => {
+            switchView(VIEWS.login, loginViewOnSuccess, 500, 500, () => {
                 // Temporary workaround
                 if(loginViewOnSuccess === VIEWS.settings){
-                    await prepareSettings()
+                    prepareSettings()
                 }
                 loginViewOnSuccess = VIEWS.landing // Reset this for good measure.
                 loginCancelEnabled(false) // Reset this for good measure.
@@ -237,7 +222,10 @@ loginButton.addEventListener('click', () => {
         } else {
             // Uh oh.
             msftLoginLogger.error('Unhandled error during login.', displayableError)
-            actualDisplayableError = Lang.queryJS('login.error.unknown')
+            actualDisplayableError = {
+                title: 'Unknown Error During Login',
+                desc: 'An unknown error has occurred. Please see the console for details.'
+            }
         }
 
         setOverlayContent(actualDisplayableError.title, actualDisplayableError.desc, Lang.queryJS('login.tryAgain'))
@@ -246,16 +234,6 @@ loginButton.addEventListener('click', () => {
             toggleOverlay(false)
         })
         toggleOverlay(true)
-    })} else {
-        loginLoading(false)
-        setOverlayContent("Code d'accès incorrect", "Le code d'accès vous est donné par un administarteur et est propre a chaque pseudo.<br>Si vous n'en avez pas, veuillez faire votre demande sous forme de ticket Discord.<br>http://www.lunexmc.fr/discord", Lang.queryJS('login.tryAgain'))
-        setOverlayHandler(() => {
-            formDisabled(false)
-            toggleOverlay(false)
-        })
-        toggleOverlay(true)
-        showError(loginPasswordError, Lang.queryJS('login.error.invalidValue'))
-        
-    }
+    })
 
 })

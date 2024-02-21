@@ -1,11 +1,11 @@
 {
     "env": {
-        "es2022": true,
+        "es2017": true,
         "node": true
     },
     "extends": "eslint:recommended",
     "parserOptions": {
-        "ecmaVersion": 2022,
+        "ecmaVersion": 2019,
         "sourceType": "module"
     },
     "rules": {

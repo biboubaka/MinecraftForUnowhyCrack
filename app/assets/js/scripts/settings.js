@@ -2,6 +2,7 @@
 const os     = require('os')
 const semver = require('semver')
 
+const { JavaGuard } = require('./assets/js/assetguard')
 const DropinModUtil  = require('./assets/js/dropinmodutil')
 const { MSFT_OPCODE, MSFT_REPLY_TYPE, MSFT_ERROR } = require('./assets/js/ipcconstants')
 
@@ -59,8 +60,8 @@ function bindFileSelectors(){
 
             if(isJavaExecSel && process.platform === 'win32') {
                 options.filters = [
-                    { name: Lang.queryJS('settings.fileSelectors.executables'), extensions: ['exe'] },
-                    { name: Lang.queryJS('settings.fileSelectors.allFiles'), extensions: ['*'] }
+                    { name: 'Executables', extensions: ['exe'] },
+                    { name: 'All Files', extensions: ['*'] }
                 ]
             }
 
@@ -68,7 +69,7 @@ function bindFileSelectors(){
             if(!res.canceled) {
                 ele.previousElementSibling.value = res.filePaths[0]
                 if(isJavaExecSel) {
-                    await populateJavaExecDetails(ele.previousElementSibling.value)
+                    populateJavaExecDetails(ele.previousElementSibling.value)
                 }
             }
         }
@@ -122,54 +123,48 @@ function initSettingsValidators(){
 /**
  * Load configuration values onto the UI. This is an automated process.
  */
-async function initSettingsValues(){
+function initSettingsValues(){
     const sEls = document.getElementById('settingsContainer').querySelectorAll('[cValue]')
-
-    for(const v of sEls) {
+    Array.from(sEls).map((v, index, arr) => {
         const cVal = v.getAttribute('cValue')
-        const serverDependent = v.hasAttribute('serverDependent') // Means the first argument is the server id.
         const gFn = ConfigManager['get' + cVal]
-        const gFnOpts = []
-        if(serverDependent) {
-            gFnOpts.push(ConfigManager.getSelectedServer())
-        }
         if(typeof gFn === 'function'){
             if(v.tagName === 'INPUT'){
                 if(v.type === 'number' || v.type === 'text'){
                     // Special Conditions
                     if(cVal === 'JavaExecutable'){
-                        v.value = gFn.apply(null, gFnOpts)
-                        await populateJavaExecDetails(v.value)
+                        populateJavaExecDetails(v.value)
+                        v.value = gFn()
                     } else if (cVal === 'DataDirectory'){
-                        v.value = gFn.apply(null, gFnOpts)
+                        v.value = gFn()
                     } else if(cVal === 'JVMOptions'){
-                        v.value = gFn.apply(null, gFnOpts).join(' ')
+                        v.value = gFn().join(' ')
                     } else {
-                        v.value = gFn.apply(null, gFnOpts)
+                        v.value = gFn()
                     }
                 } else if(v.type === 'checkbox'){
-                    v.checked = gFn.apply(null, gFnOpts)
+                    v.checked = gFn()
                 }
             } else if(v.tagName === 'DIV'){
                 if(v.classList.contains('rangeSlider')){
                     // Special Conditions
                     if(cVal === 'MinRAM' || cVal === 'MaxRAM'){
-                        let val = gFn.apply(null, gFnOpts)
+                        let val = gFn()
                         if(val.endsWith('M')){
-                            val = Number(val.substring(0, val.length-1))/1024
+                            val = Number(val.substring(0, val.length-1))/1000
                         } else {
                             val = Number.parseFloat(val)
                         }
 
                         v.setAttribute('value', val)
                     } else {
-                        v.setAttribute('value', Number.parseFloat(gFn.apply(null, gFnOpts)))
+                        v.setAttribute('value', Number.parseFloat(gFn()))
                     }
                 }
             }
         }
-    }
 
+    })
 }
 
 /**
@@ -179,31 +174,22 @@ function saveSettingsValues(){
     const sEls = document.getElementById('settingsContainer').querySelectorAll('[cValue]')
     Array.from(sEls).map((v, index, arr) => {
         const cVal = v.getAttribute('cValue')
-        const serverDependent = v.hasAttribute('serverDependent') // Means the first argument is the server id.
         const sFn = ConfigManager['set' + cVal]
-        const sFnOpts = []
-        if(serverDependent) {
-            sFnOpts.push(ConfigManager.getSelectedServer())
-        }
         if(typeof sFn === 'function'){
             if(v.tagName === 'INPUT'){
                 if(v.type === 'number' || v.type === 'text'){
                     // Special Conditions
                     if(cVal === 'JVMOptions'){
                         if(!v.value.trim()) {
-                            sFnOpts.push([])
-                            sFn.apply(null, sFnOpts)
+                            sFn([])
                         } else {
-                            sFnOpts.push(v.value.trim().split(/\s+/))
-                            sFn.apply(null, sFnOpts)
+                            sFn(v.value.trim().split(/\s+/))
                         }
                     } else {
-                        sFnOpts.push(v.value)
-                        sFn.apply(null, sFnOpts)
+                        sFn(v.value)
                     }
                 } else if(v.type === 'checkbox'){
-                    sFnOpts.push(v.checked)
-                    sFn.apply(null, sFnOpts)
+                    sFn(v.checked)
                     // Special Conditions
                     if(cVal === 'AllowPrerelease'){
                         changeAllowPrerelease(v.checked)
@@ -215,16 +201,14 @@ function saveSettingsValues(){
                     if(cVal === 'MinRAM' || cVal === 'MaxRAM'){
                         let val = Number(v.getAttribute('value'))
                         if(val%1 > 0){
-                            val = val*1024 + 'M'
+                            val = val*1000 + 'M'
                         } else {
                             val = val + 'G'
                         }
 
-                        sFnOpts.push(val)
-                        sFn.apply(null, sFnOpts)
+                        sFn(val)
                     } else {
-                        sFnOpts.push(v.getAttribute('value'))
-                        sFn.apply(null, sFnOpts)
+                        sFn(v.getAttribute('value'))
                     }
                 }
             }
@@ -321,17 +305,13 @@ function settingsSaveDisabled(v){
     settingsNavDone.disabled = v
 }
 
-function fullSettingsSave() {
+/* Closes the settings view and saves all data. */
+settingsNavDone.onclick = () => {
     saveSettingsValues()
     saveModConfiguration()
     ConfigManager.save()
     saveDropinModConfiguration()
     saveShaderpackSettings()
-}
-
-/* Closes the settings view and saves all data. */
-settingsNavDone.onclick = () => {
-    fullSettingsSave()
     switchView(getCurrentView(), VIEWS.landing)
 }
 
@@ -358,6 +338,15 @@ document.getElementById('settingsAddMicrosoftAccount').onclick = (e) => {
     })
 }
 
+// Bind the add offline account button.
+document.getElementById('settingsAddOfflineAccount').onclick = (e) => {
+    switchView(getCurrentView(), VIEWS.loginOffline, 500, 500, () => {
+        loginOfflineViewOnCancel = VIEWS.settings
+        loginOfflineViewOnSuccess = VIEWS.settings
+        loginCancelEnabled(true)
+    })
+}
+
 // Bind reply for Microsoft Login.
 ipcRenderer.on(MSFT_OPCODE.REPLY_LOGIN, (_, ...arguments_) => {
     if (arguments_[0] === MSFT_REPLY_TYPE.ERROR) {
@@ -374,9 +363,9 @@ ipcRenderer.on(MSFT_OPCODE.REPLY_LOGIN, (_, ...arguments_) => {
 
             // Unexpected error.
             setOverlayContent(
-                Lang.queryJS('settings.msftLogin.errorTitle'),
-                Lang.queryJS('settings.msftLogin.errorMessage'),
-                Lang.queryJS('settings.msftLogin.okButton')
+                'Something Went Wrong',
+                'Microsoft authentication failed. Please try again.',
+                'OK'
             )
             setOverlayHandler(() => {
                 toggleOverlay(false)
@@ -391,17 +380,17 @@ ipcRenderer.on(MSFT_OPCODE.REPLY_LOGIN, (_, ...arguments_) => {
         if (Object.prototype.hasOwnProperty.call(queryMap, 'error')) {
             switchView(getCurrentView(), viewOnClose, 500, 500, () => {
                 // TODO Dont know what these errors are. Just show them I guess.
-                // This is probably if you messed up the app registration with Azure.      
-                let error = queryMap.error // Error might be 'access_denied' ?
-                let errorDesc = queryMap.error_description
+                // This is probably if you messed up the app registration with Azure.
                 console.log('Error getting authCode, is Azure application registered correctly?')
                 console.log(error)
-                console.log(errorDesc)
-                console.log('Full query map: ', queryMap)
+                console.log(error_description)
+                console.log('Full query map', queryMap)
+                let error = queryMap.error // Error might be 'access_denied' ?
+                let errorDesc = queryMap.error_description
                 setOverlayContent(
                     error,
                     errorDesc,
-                    Lang.queryJS('settings.msftLogin.okButton')
+                    'OK'
                 )
                 setOverlayHandler(() => {
                     toggleOverlay(false)
@@ -416,8 +405,8 @@ ipcRenderer.on(MSFT_OPCODE.REPLY_LOGIN, (_, ...arguments_) => {
             const authCode = queryMap.code
             AuthManager.addMicrosoftAccount(authCode).then(value => {
                 updateSelectedAccount(value)
-                switchView(getCurrentView(), viewOnClose, 500, 500, async () => {
-                    await prepareSettings()
+                switchView(getCurrentView(), viewOnClose, 500, 500, () => {
+                    prepareSettings()
                 })
             })
                 .catch((displayableError) => {
@@ -429,7 +418,10 @@ ipcRenderer.on(MSFT_OPCODE.REPLY_LOGIN, (_, ...arguments_) => {
                     } else {
                         // Uh oh.
                         msftLoginLogger.error('Unhandled error during login.', displayableError)
-                        actualDisplayableError = Lang.queryJS('login.error.unknown')
+                        actualDisplayableError = {
+                            title: 'Unknown Error During Login',
+                            desc: 'An unknown error has occurred. Please see the console for details.'
+                        }
                     }
 
                     switchView(getCurrentView(), viewOnClose, 500, 500, () => {
@@ -458,11 +450,11 @@ function bindAuthAccountSelect(){
             for(let i=0; i<selectBtns.length; i++){
                 if(selectBtns[i].hasAttribute('selected')){
                     selectBtns[i].removeAttribute('selected')
-                    selectBtns[i].innerHTML = Lang.queryJS('settings.authAccountSelect.selectButton')
+                    selectBtns[i].innerHTML = 'Select Account'
                 }
             }
             val.setAttribute('selected', '')
-            val.innerHTML = Lang.queryJS('settings.authAccountSelect.selectedButton')
+            val.innerHTML = 'Selected Account &#10004;'
             setSelectedAccount(val.closest('.settingsAuthAccount').getAttribute('uuid'))
         }
     })
@@ -480,10 +472,10 @@ function bindAuthAccountLogOut(){
             if(Object.keys(ConfigManager.getAuthAccounts()).length === 1){
                 isLastAccount = true
                 setOverlayContent(
-                    Lang.queryJS('settings.authAccountLogout.lastAccountWarningTitle'),
-                    Lang.queryJS('settings.authAccountLogout.lastAccountWarningMessage'),
-                    Lang.queryJS('settings.authAccountLogout.confirmButton'),
-                    Lang.queryJS('settings.authAccountLogout.cancelButton')
+                    'Warning<br>This is Your Last Account',
+                    'In order to use the launcher you must be logged into at least one account. You will need to login again after.<br><br>Are you sure you want to log out?',
+                    'I\'m Sure',
+                    'Cancel'
                 )
                 setOverlayHandler(() => {
                     processLogOut(val, isLastAccount)
@@ -517,6 +509,24 @@ function processLogOut(val, isLastAccount){
         msAccDomElementCache = parent
         switchView(getCurrentView(), VIEWS.waiting, 500, 500, () => {
             ipcRenderer.send(MSFT_OPCODE.OPEN_LOGOUT, uuid, isLastAccount)
+        })
+    } else if (targetAcc.type === 'offline') {
+        AuthManager.removeMicrosoftAccount(uuid).then(() => {
+            if(!isLastAccount && uuid === prevSelAcc.uuid){
+                const selAcc = ConfigManager.getSelectedAccount()
+                refreshAuthAccountSelected(selAcc.uuid)
+                updateSelectedAccount(selAcc)
+                validateSelectedAccount()
+            }
+            if(isLastAccount) {
+                loginOptionsCancelEnabled(false)
+                loginOptionsViewOnLoginSuccess = VIEWS.settings
+                loginOptionsViewOnLoginCancel = VIEWS.loginOptions
+                switchView(getCurrentView(), VIEWS.loginOptions)
+            }
+        })
+        $(parent).fadeOut(250, () => {
+            parent.remove()
         })
     } else {
         AuthManager.removeMojangAccount(uuid).then(() => {
@@ -552,9 +562,9 @@ ipcRenderer.on(MSFT_OPCODE.REPLY_LOGOUT, (_, ...arguments_) => {
 
             // Unexpected error.
             setOverlayContent(
-                Lang.queryJS('settings.msftLogout.errorTitle'),
-                Lang.queryJS('settings.msftLogout.errorMessage'),
-                Lang.queryJS('settings.msftLogout.okButton')
+                'Something Went Wrong',
+                'Microsoft logout failed. Please try again.',
+                'OK'
             )
             setOverlayHandler(() => {
                 toggleOverlay(false)
@@ -608,18 +618,19 @@ function refreshAuthAccountSelected(uuid){
         const selBtn = val.getElementsByClassName('settingsAuthAccountSelect')[0]
         if(uuid === val.getAttribute('uuid')){
             selBtn.setAttribute('selected', '')
-            selBtn.innerHTML = Lang.queryJS('settings.authAccountSelect.selectedButton')
+            selBtn.innerHTML = 'Selected Account &#10004;'
         } else {
             if(selBtn.hasAttribute('selected')){
                 selBtn.removeAttribute('selected')
             }
-            selBtn.innerHTML = Lang.queryJS('settings.authAccountSelect.selectButton')
+            selBtn.innerHTML = 'Select Account'
         }
     })
 }
 
 const settingsCurrentMicrosoftAccounts = document.getElementById('settingsCurrentMicrosoftAccounts')
 const settingsCurrentMojangAccounts = document.getElementById('settingsCurrentMojangAccounts')
+const settingsCurrentOfflineAccounts = document.getElementById('settingsCurrentOfflineAccounts')
 
 /**
  * Add auth account elements for each one stored in the authentication database.
@@ -634,6 +645,7 @@ function populateAuthAccounts(){
 
     let microsoftAuthAccountStr = ''
     let mojangAuthAccountStr = ''
+    let offlineAuthAccountStr = ''
 
     authKeys.forEach((val) => {
         const acc = authAccounts[val]
@@ -645,18 +657,18 @@ function populateAuthAccounts(){
             <div class="settingsAuthAccountRight">
                 <div class="settingsAuthAccountDetails">
                     <div class="settingsAuthAccountDetailPane">
-                        <div class="settingsAuthAccountDetailTitle">${Lang.queryJS('settings.authAccountPopulate.username')}</div>
+                        <div class="settingsAuthAccountDetailTitle">Username</div>
                         <div class="settingsAuthAccountDetailValue">${acc.displayName}</div>
                     </div>
                     <div class="settingsAuthAccountDetailPane">
-                        <div class="settingsAuthAccountDetailTitle">${Lang.queryJS('settings.authAccountPopulate.uuid')}</div>
+                        <div class="settingsAuthAccountDetailTitle">UUID</div>
                         <div class="settingsAuthAccountDetailValue">${acc.uuid}</div>
                     </div>
                 </div>
                 <div class="settingsAuthAccountActions">
-                    <button class="settingsAuthAccountSelect" ${selectedUUID === acc.uuid ? 'selected>' + Lang.queryJS('settings.authAccountPopulate.selectedAccount') : '>' + Lang.queryJS('settings.authAccountPopulate.selectAccount')}</button>
+                    <button class="settingsAuthAccountSelect" ${selectedUUID === acc.uuid ? 'selected>Selected Account &#10004;' : '>Select Account'}</button>
                     <div class="settingsAuthAccountWrapper">
-                        <button class="settingsAuthAccountLogOut">${Lang.queryJS('settings.authAccountPopulate.logout')}</button>
+                        <button class="settingsAuthAccountLogOut">Log Out</button>
                     </div>
                 </div>
             </div>
@@ -664,6 +676,8 @@ function populateAuthAccounts(){
 
         if(acc.type === 'microsoft') {
             microsoftAuthAccountStr += accHtml
+        } else if (acc.type === 'offline') {
+            offlineAuthAccountStr += accHtml
         } else {
             mojangAuthAccountStr += accHtml
         }
@@ -672,6 +686,7 @@ function populateAuthAccounts(){
 
     settingsCurrentMicrosoftAccounts.innerHTML = microsoftAuthAccountStr
     settingsCurrentMojangAccounts.innerHTML = mojangAuthAccountStr
+    settingsCurrentOfflineAccounts.innerHTML = offlineAuthAccountStr
 }
 
 /**
@@ -710,13 +725,13 @@ const settingsModsContainer = document.getElementById('settingsModsContainer')
 /**
  * Resolve and update the mods on the UI.
  */
-async function resolveModsForUI(){
+function resolveModsForUI(){
     const serv = ConfigManager.getSelectedServer()
 
-    const distro = await DistroAPI.getDistribution()
+    const distro = DistroManager.getDistribution()
     const servConf = ConfigManager.getModConfiguration(serv)
 
-    const modStr = parseModulesForUI(distro.getServerById(serv).modules, false, servConf.mods)
+    const modStr = parseModulesForUI(distro.getServer(serv).getModules(), false, servConf.mods)
 
     document.getElementById('settingsReqModsContent').innerHTML = modStr.reqMods
     document.getElementById('settingsOptModsContent').innerHTML = modStr.optMods
@@ -736,17 +751,17 @@ function parseModulesForUI(mdls, submodules, servConf){
 
     for(const mdl of mdls){
 
-        if(mdl.rawModule.type === Type.ForgeMod || mdl.rawModule.type === Type.LiteMod || mdl.rawModule.type === Type.LiteLoader){
+        if(mdl.getType() === DistroManager.Types.ForgeMod || mdl.getType() === DistroManager.Types.LiteMod || mdl.getType() === DistroManager.Types.LiteLoader){
 
-            if(mdl.getRequired().value){
+            if(mdl.getRequired().isRequired()){
 
-                reqMods += `<div id="${mdl.getVersionlessMavenIdentifier()}" class="settingsBaseMod settings${submodules ? 'Sub' : ''}Mod" enabled>
+                reqMods += `<div id="${mdl.getVersionlessID()}" class="settingsBaseMod settings${submodules ? 'Sub' : ''}Mod" enabled>
                     <div class="settingsModContent">
                         <div class="settingsModMainWrapper">
                             <div class="settingsModStatus"></div>
                             <div class="settingsModDetails">
-                                <span class="settingsModName">${mdl.rawModule.name}</span>
-                                <span class="settingsModVersion">v${mdl.mavenComponents.version}</span>
+                                <span class="settingsModName">${mdl.getName()}</span>
+                                <span class="settingsModVersion">v${mdl.getVersion()}</span>
                             </div>
                         </div>
                         <label class="toggleSwitch" reqmod>
@@ -754,32 +769,32 @@ function parseModulesForUI(mdls, submodules, servConf){
                             <span class="toggleSwitchSlider"></span>
                         </label>
                     </div>
-                    ${mdl.subModules.length > 0 ? `<div class="settingsSubModContainer">
-                        ${Object.values(parseModulesForUI(mdl.subModules, true, servConf[mdl.getVersionlessMavenIdentifier()])).join('')}
+                    ${mdl.hasSubModules() ? `<div class="settingsSubModContainer">
+                        ${Object.values(parseModulesForUI(mdl.getSubModules(), true, servConf[mdl.getVersionlessID()])).join('')}
                     </div>` : ''}
                 </div>`
 
             } else {
 
-                const conf = servConf[mdl.getVersionlessMavenIdentifier()]
+                const conf = servConf[mdl.getVersionlessID()]
                 const val = typeof conf === 'object' ? conf.value : conf
 
-                optMods += `<div id="${mdl.getVersionlessMavenIdentifier()}" class="settingsBaseMod settings${submodules ? 'Sub' : ''}Mod" ${val ? 'enabled' : ''}>
+                optMods += `<div id="${mdl.getVersionlessID()}" class="settingsBaseMod settings${submodules ? 'Sub' : ''}Mod" ${val ? 'enabled' : ''}>
                     <div class="settingsModContent">
                         <div class="settingsModMainWrapper">
                             <div class="settingsModStatus"></div>
                             <div class="settingsModDetails">
-                                <span class="settingsModName">${mdl.rawModule.name}</span>
-                                <span class="settingsModVersion">v${mdl.mavenComponents.version}</span>
+                                <span class="settingsModName">${mdl.getName()}</span>
+                                <span class="settingsModVersion">v${mdl.getVersion()}</span>
                             </div>
                         </div>
                         <label class="toggleSwitch">
-                            <input type="checkbox" formod="${mdl.getVersionlessMavenIdentifier()}" ${val ? 'checked' : ''}>
+                            <input type="checkbox" formod="${mdl.getVersionlessID()}" ${val ? 'checked' : ''}>
                             <span class="toggleSwitchSlider"></span>
                         </label>
                     </div>
-                    ${mdl.subModules.length > 0 ? `<div class="settingsSubModContainer">
-                        ${Object.values(parseModulesForUI(mdl.subModules, true, conf.mods)).join('')}
+                    ${mdl.hasSubModules() ? `<div class="settingsSubModContainer">
+                        ${Object.values(parseModulesForUI(mdl.getSubModules(), true, conf.mods)).join('')}
                     </div>` : ''}
                 </div>`
 
@@ -855,10 +870,10 @@ let CACHE_DROPIN_MODS
  * Resolve any located drop-in mods for this server and
  * populate the results onto the UI.
  */
-async function resolveDropinModsForUI(){
-    const serv = (await DistroAPI.getDistribution()).getServerById(ConfigManager.getSelectedServer())
-    CACHE_SETTINGS_MODS_DIR = path.join(ConfigManager.getInstanceDirectory(), serv.rawServer.id, 'mods')
-    CACHE_DROPIN_MODS = DropinModUtil.scanForDropinMods(CACHE_SETTINGS_MODS_DIR, serv.rawServer.minecraftVersion)
+function resolveDropinModsForUI(){
+    const serv = DistroManager.getDistribution().getServer(ConfigManager.getSelectedServer())
+    CACHE_SETTINGS_MODS_DIR = path.join(ConfigManager.getInstanceDirectory(), serv.getID(), 'mods')
+    CACHE_DROPIN_MODS = DropinModUtil.scanForDropinMods(CACHE_SETTINGS_MODS_DIR, serv.getMinecraftVersion())
 
     let dropinMods = ''
 
@@ -870,7 +885,7 @@ async function resolveDropinModsForUI(){
                             <div class="settingsModDetails">
                                 <span class="settingsModName">${dropin.name}</span>
                                 <div class="settingsDropinRemoveWrapper">
-                                    <button class="settingsDropinRemoveButton" remmod="${dropin.fullName}">${Lang.queryJS('settings.dropinMods.removeButton')}</button>
+                                    <button class="settingsDropinRemoveButton" remmod="${dropin.fullName}">Remove</button>
                                 </div>
                             </div>
                         </div>
@@ -898,9 +913,9 @@ function bindDropinModsRemoveButton(){
                 document.getElementById(fullName).remove()
             } else {
                 setOverlayContent(
-                    Lang.queryJS('settings.dropinMods.deleteFailedTitle', { fullName }),
-                    Lang.queryJS('settings.dropinMods.deleteFailedMessage'),
-                    Lang.queryJS('settings.okButton')
+                    `Failed to Delete<br>Drop-in Mod ${fullName}`,
+                    'Make sure the file is not in use and try again.',
+                    'Okay'
                 )
                 setOverlayHandler(null)
                 toggleOverlay(true)
@@ -931,12 +946,12 @@ function bindDropinModFileSystemButton(){
         fsBtn.removeAttribute('drag')
     }
 
-    fsBtn.ondrop = async e => {
+    fsBtn.ondrop = e => {
         fsBtn.removeAttribute('drag')
         e.preventDefault()
 
         DropinModUtil.addDropinMods(e.dataTransfer.files, CACHE_SETTINGS_MODS_DIR)
-        await reloadDropinMods()
+        reloadDropinMods()
     }
 }
 
@@ -953,9 +968,9 @@ function saveDropinModConfiguration(){
                 DropinModUtil.toggleDropinMod(CACHE_SETTINGS_MODS_DIR, dropin.fullName, dropinUIEnabled).catch(err => {
                     if(!isOverlayVisible()){
                         setOverlayContent(
-                            Lang.queryJS('settings.dropinMods.failedToggleTitle'),
+                            'Failed to Toggle<br>One or More Drop-in Mods',
                             err.message,
-                            Lang.queryJS('settings.okButton')
+                            'Okay'
                         )
                         setOverlayHandler(null)
                         toggleOverlay(true)
@@ -968,18 +983,18 @@ function saveDropinModConfiguration(){
 
 // Refresh the drop-in mods when F5 is pressed.
 // Only active on the mods tab.
-document.addEventListener('keydown', async (e) => {
+document.addEventListener('keydown', (e) => {
     if(getCurrentView() === VIEWS.settings && selectedSettingsTab === 'settingsTabMods'){
         if(e.key === 'F5'){
-            await reloadDropinMods()
+            reloadDropinMods()
             saveShaderpackSettings()
-            await resolveShaderpacksForUI()
+            resolveShaderpacksForUI()
         }
     }
 })
 
-async function reloadDropinMods(){
-    await resolveDropinModsForUI()
+function reloadDropinMods(){
+    resolveDropinModsForUI()
     bindDropinModsRemoveButton()
     bindDropinModFileSystemButton()
     bindModsToggleSwitch()
@@ -994,9 +1009,9 @@ let CACHE_SELECTED_SHADERPACK
 /**
  * Load shaderpack information.
  */
-async function resolveShaderpacksForUI(){
-    const serv = (await DistroAPI.getDistribution()).getServerById(ConfigManager.getSelectedServer())
-    CACHE_SETTINGS_INSTANCE_DIR = path.join(ConfigManager.getInstanceDirectory(), serv.rawServer.id)
+function resolveShaderpacksForUI(){
+    const serv = DistroManager.getDistribution().getServer(ConfigManager.getSelectedServer())
+    CACHE_SETTINGS_INSTANCE_DIR = path.join(ConfigManager.getInstanceDirectory(), serv.getID())
     CACHE_SHADERPACKS = DropinModUtil.scanForShaderpacks(CACHE_SETTINGS_INSTANCE_DIR)
     CACHE_SELECTED_SHADERPACK = DropinModUtil.getEnabledShaderpack(CACHE_SETTINGS_INSTANCE_DIR)
 
@@ -1055,13 +1070,13 @@ function bindShaderpackButton() {
         spBtn.removeAttribute('drag')
     }
 
-    spBtn.ondrop = async e => {
+    spBtn.ondrop = e => {
         spBtn.removeAttribute('drag')
         e.preventDefault()
 
         DropinModUtil.addShaderpacks(e.dataTransfer.files, CACHE_SETTINGS_INSTANCE_DIR)
         saveShaderpackSettings()
-        await resolveShaderpacksForUI()
+        resolveShaderpacksForUI()
     }
 }
 
@@ -1070,40 +1085,36 @@ function bindShaderpackButton() {
 /**
  * Load the currently selected server information onto the mods tab.
  */
-async function loadSelectedServerOnModsTab(){
-    const serv = (await DistroAPI.getDistribution()).getServerById(ConfigManager.getSelectedServer())
+function loadSelectedServerOnModsTab(){
+    const serv = DistroManager.getDistribution().getServer(ConfigManager.getSelectedServer())
 
-    for(const el of document.getElementsByClassName('settingsSelServContent')) {
-        el.innerHTML = `
-            <img class="serverListingImg" src="${serv.rawServer.icon}"/>
-            <div class="serverListingDetails">
-                <span class="serverListingName">${serv.rawServer.name}</span>
-                <span class="serverListingDescription">${serv.rawServer.description}</span>
-                <div class="serverListingInfo">
-                    <div class="serverListingVersion">${serv.rawServer.minecraftVersion}</div>
-                    <div class="serverListingRevision">${serv.rawServer.version}</div>
-                    ${serv.rawServer.mainServer ? `<div class="serverListingStarWrapper">
-                        <svg id="Layer_1" viewBox="0 0 107.45 104.74" width="20px" height="20px">
-                            <defs>
-                                <style>.cls-1{fill:#fff;}.cls-2{fill:none;stroke:#fff;stroke-miterlimit:10;}</style>
-                            </defs>
-                            <path class="cls-1" d="M100.93,65.54C89,62,68.18,55.65,63.54,52.13c2.7-5.23,18.8-19.2,28-27.55C81.36,31.74,63.74,43.87,58.09,45.3c-2.41-5.37-3.61-26.52-4.37-39-.77,12.46-2,33.64-4.36,39-5.7-1.46-23.3-13.57-33.49-20.72,9.26,8.37,25.39,22.36,28,27.55C39.21,55.68,18.47,62,6.52,65.55c12.32-2,33.63-6.06,39.34-4.9-.16,5.87-8.41,26.16-13.11,37.69,6.1-10.89,16.52-30.16,21-33.9,4.5,3.79,14.93,23.09,21,34C70,86.84,61.73,66.48,61.59,60.65,67.36,59.49,88.64,63.52,100.93,65.54Z"/>
-                            <circle class="cls-2" cx="53.73" cy="53.9" r="38"/>
-                        </svg>
-                        <span class="serverListingStarTooltip">${Lang.queryJS('settings.serverListing.mainServer')}</span>
-                    </div>` : ''}
-                </div>
+    document.getElementById('settingsSelServContent').innerHTML = `
+        <img class="serverListingImg" src="${serv.getIcon()}"/>
+        <div class="serverListingDetails">
+            <span class="serverListingName">${serv.getName()}</span>
+            <span class="serverListingDescription">${serv.getDescription()}</span>
+            <div class="serverListingInfo">
+                <div class="serverListingVersion">${serv.getMinecraftVersion()}</div>
+                <div class="serverListingRevision">${serv.getVersion()}</div>
+                ${serv.isMainServer() ? `<div class="serverListingStarWrapper">
+                    <svg id="Layer_1" viewBox="0 0 107.45 104.74" width="20px" height="20px">
+                        <defs>
+                            <style>.cls-1{fill:#fff;}.cls-2{fill:none;stroke:#fff;stroke-miterlimit:10;}</style>
+                        </defs>
+                        <path class="cls-1" d="M100.93,65.54C89,62,68.18,55.65,63.54,52.13c2.7-5.23,18.8-19.2,28-27.55C81.36,31.74,63.74,43.87,58.09,45.3c-2.41-5.37-3.61-26.52-4.37-39-.77,12.46-2,33.64-4.36,39-5.7-1.46-23.3-13.57-33.49-20.72,9.26,8.37,25.39,22.36,28,27.55C39.21,55.68,18.47,62,6.52,65.55c12.32-2,33.63-6.06,39.34-4.9-.16,5.87-8.41,26.16-13.11,37.69,6.1-10.89,16.52-30.16,21-33.9,4.5,3.79,14.93,23.09,21,34C70,86.84,61.73,66.48,61.59,60.65,67.36,59.49,88.64,63.52,100.93,65.54Z"/>
+                        <circle class="cls-2" cx="53.73" cy="53.9" r="38"/>
+                    </svg>
+                    <span class="serverListingStarTooltip">Main Server</span>
+                </div>` : ''}
             </div>
-        `
-    }
+        </div>
+    `
 }
 
 // Bind functionality to the server switch button.
-Array.from(document.getElementsByClassName('settingsSwitchServerButton')).forEach(el => {
-    el.addEventListener('click', async e => {
-        e.target.blur()
-        await toggleServerSelection(true)
-    })
+document.getElementById('settingsSwitchServerButton').addEventListener('click', (e) => {
+    e.target.blur()
+    toggleServerSelection(true)
 })
 
 /**
@@ -1116,28 +1127,28 @@ function saveAllModConfigurations(){
 }
 
 /**
- * Function to refresh the current tab whenever the selected
+ * Function to refresh the mods tab whenever the selected
  * server is changed.
  */
-function animateSettingsTabRefresh(){
-    $(`#${selectedSettingsTab}`).fadeOut(500, async () => {
-        await prepareSettings()
-        $(`#${selectedSettingsTab}`).fadeIn(500)
+function animateModsTabRefresh(){
+    $('#settingsTabMods').fadeOut(500, () => {
+        prepareModsTab()
+        $('#settingsTabMods').fadeIn(500)
     })
 }
 
 /**
  * Prepare the Mods tab for display.
  */
-async function prepareModsTab(first){
-    await resolveModsForUI()
-    await resolveDropinModsForUI()
-    await resolveShaderpacksForUI()
+function prepareModsTab(first){
+    resolveModsForUI()
+    resolveDropinModsForUI()
+    resolveShaderpacksForUI()
     bindDropinModsRemoveButton()
     bindDropinModFileSystemButton()
     bindShaderpackButton()
     bindModsToggleSwitch()
-    await loadSelectedServerOnModsTab()
+    loadSelectedServerOnModsTab()
 }
 
 /**
@@ -1152,8 +1163,16 @@ const settingsMinRAMLabel     = document.getElementById('settingsMinRAMLabel')
 const settingsMemoryTotal     = document.getElementById('settingsMemoryTotal')
 const settingsMemoryAvail     = document.getElementById('settingsMemoryAvail')
 const settingsJavaExecDetails = document.getElementById('settingsJavaExecDetails')
-const settingsJavaReqDesc     = document.getElementById('settingsJavaReqDesc')
-const settingsJvmOptsLink     = document.getElementById('settingsJvmOptsLink')
+
+// Store maximum memory values.
+const SETTINGS_MAX_MEMORY = ConfigManager.getAbsoluteMaxRAM()
+const SETTINGS_MIN_MEMORY = ConfigManager.getAbsoluteMinRAM()
+
+// Set the max and min values for the ranged sliders.
+settingsMaxRAMRange.setAttribute('max', SETTINGS_MAX_MEMORY)
+settingsMaxRAMRange.setAttribute('min', SETTINGS_MIN_MEMORY)
+settingsMinRAMRange.setAttribute('max', SETTINGS_MAX_MEMORY)
+settingsMinRAMRange.setAttribute('min', SETTINGS_MIN_MEMORY )
 
 // Bind on change event for min memory container.
 settingsMinRAMRange.onchange = (e) => {
@@ -1165,7 +1184,7 @@ settingsMinRAMRange.onchange = (e) => {
     // Get reference to range bar.
     const bar = e.target.getElementsByClassName('rangeSliderBar')[0]
     // Calculate effective total memory.
-    const max = os.totalmem()/1073741824
+    const max = (os.totalmem()-1000000000)/1000000000
 
     // Change range bar color based on the selected value.
     if(sMinV >= max/2){
@@ -1197,7 +1216,7 @@ settingsMaxRAMRange.onchange = (e) => {
     // Get reference to range bar.
     const bar = e.target.getElementsByClassName('rangeSliderBar')[0]
     // Calculate effective total memory.
-    const max = os.totalmem()/1073741824
+    const max = (os.totalmem()-1000000000)/1000000000
 
     // Change range bar color based on the selected value.
     if(sMaxV >= max/2){
@@ -1325,8 +1344,8 @@ function updateRangedSlider(element, value, notch){
  * Display the total and available RAM.
  */
 function populateMemoryStatus(){
-    settingsMemoryTotal.innerHTML = Number((os.totalmem()-1073741824)/1073741824).toFixed(1) + 'G'
-    settingsMemoryAvail.innerHTML = Number(os.freemem()/1073741824).toFixed(1) + 'G'
+    settingsMemoryTotal.innerHTML = Number((os.totalmem()-1000000000)/1000000000).toFixed(1) + 'G'
+    settingsMemoryAvail.innerHTML = Number(os.freemem()/1000000000).toFixed(1) + 'G'
 }
 
 /**
@@ -1335,61 +1354,28 @@ function populateMemoryStatus(){
  * 
  * @param {string} execPath The executable path to populate against.
  */
-async function populateJavaExecDetails(execPath){
-    const server = (await DistroAPI.getDistribution()).getServerById(ConfigManager.getSelectedServer())
-
-    const details = await validateSelectedJvm(ensureJavaDirIsRoot(execPath), server.effectiveJavaOptions.supported)
-
-    if(details != null) {
-        settingsJavaExecDetails.innerHTML = Lang.queryJS('settings.java.selectedJava', { version: details.semverStr, vendor: details.vendor })
-    } else {
-        settingsJavaExecDetails.innerHTML = Lang.queryJS('settings.java.invalidSelection')
-    }
-}
-
-function populateJavaReqDesc(server) {
-    settingsJavaReqDesc.innerHTML = Lang.queryJS('settings.java.requiresJava', { major: server.effectiveJavaOptions.suggestedMajor })
-}
-
-function populateJvmOptsLink(server) {
-    const major = server.effectiveJavaOptions.suggestedMajor
-    settingsJvmOptsLink.innerHTML = Lang.queryJS('settings.java.availableOptions', { major: major })
-    if(major >= 12) {
-        settingsJvmOptsLink.href = `https://docs.oracle.com/en/java/javase/${major}/docs/specs/man/java.html#extra-options-for-java`
-    }
-    else if(major >= 11) {
-        settingsJvmOptsLink.href = 'https://docs.oracle.com/en/java/javase/11/tools/java.html#GUID-3B1CE181-CD30-4178-9602-230B800D4FAE'
-    }
-    else if(major >= 9) {
-        settingsJvmOptsLink.href = `https://docs.oracle.com/javase/${major}/tools/java.htm`
-    }
-    else {
-        settingsJvmOptsLink.href = `https://docs.oracle.com/javase/${major}/docs/technotes/tools/${process.platform === 'win32' ? 'windows' : 'unix'}/java.html`
-    }
-}
-
-function bindMinMaxRam(server) {
-    // Store maximum memory values.
-    const SETTINGS_MAX_MEMORY = ConfigManager.getAbsoluteMaxRAM(server.rawServer.javaOptions?.ram)
-    const SETTINGS_MIN_MEMORY = ConfigManager.getAbsoluteMinRAM(server.rawServer.javaOptions?.ram)
-
-    // Set the max and min values for the ranged sliders.
-    settingsMaxRAMRange.setAttribute('max', SETTINGS_MAX_MEMORY)
-    settingsMaxRAMRange.setAttribute('min', SETTINGS_MIN_MEMORY)
-    settingsMinRAMRange.setAttribute('max', SETTINGS_MAX_MEMORY)
-    settingsMinRAMRange.setAttribute('min', SETTINGS_MIN_MEMORY)
+function populateJavaExecDetails(execPath){
+    const jg = new JavaGuard(DistroManager.getDistribution().getServer(ConfigManager.getSelectedServer()).getMinecraftVersion())
+    jg._validateJavaBinary(execPath).then(v => {
+        if(v.valid){
+            const vendor = v.vendor != null ? ` (${v.vendor})` : ''
+            if(v.version.major < 9) {
+                settingsJavaExecDetails.innerHTML = `Selected: Java ${v.version.major} Update ${v.version.update} (x${v.arch})${vendor}`
+            } else {
+                settingsJavaExecDetails.innerHTML = `Selected: Java ${v.version.major}.${v.version.minor}.${v.version.revision} (x${v.arch})${vendor}`
+            }
+        } else {
+            settingsJavaExecDetails.innerHTML = 'Invalid Selection'
+        }
+    })
 }
 
 /**
  * Prepare the Java tab for display.
  */
-async function prepareJavaTab(){
-    const server = (await DistroAPI.getDistribution()).getServerById(ConfigManager.getSelectedServer())
-    bindMinMaxRam(server)
-    bindRangeSlider(server)
+function prepareJavaTab(){
+    bindRangeSlider()
     populateMemoryStatus()
-    populateJavaReqDesc(server)
-    populateJvmOptsLink(server)
 }
 
 /**
@@ -1430,11 +1416,11 @@ function isPrerelease(version){
 function populateVersionInformation(version, valueElement, titleElement, checkElement){
     valueElement.innerHTML = version
     if(isPrerelease(version)){
-        titleElement.innerHTML = Lang.queryJS('settings.about.preReleaseTitle')
+        titleElement.innerHTML = 'Pre-release'
         titleElement.style.color = '#ff886d'
         checkElement.style.background = '#ff886d'
     } else {
-        titleElement.innerHTML = Lang.queryJS('settings.about.stableReleaseTitle')
+        titleElement.innerHTML = 'Stable Release'
         titleElement.style.color = null
         checkElement.style.background = null
     }
@@ -1453,7 +1439,7 @@ function populateAboutVersionInformation(){
  */
 function populateReleaseNotes(){
     $.ajax({
-        url: 'https://github.com/ci2bx/LunexLauncher/releases.atom',
+        url: 'https://github.com/dscalzi/HeliosLauncher/releases.atom',
         success: (data) => {
             const version = 'v' + remote.app.getVersion()
             const entries = $(data).find('entry')
@@ -1473,7 +1459,7 @@ function populateReleaseNotes(){
         },
         timeout: 2500
     }).catch(err => {
-        settingsAboutChangelogText.innerHTML = Lang.queryJS('settings.about.releaseNotesFailed')
+        settingsAboutChangelogText.innerHTML = 'Failed to load release notes.'
     })
 }
 
@@ -1521,27 +1507,27 @@ function settingsUpdateButtonStatus(text, disabled = false, handler = null){
  */
 function populateSettingsUpdateInformation(data){
     if(data != null){
-        settingsUpdateTitle.innerHTML = isPrerelease(data.version) ? Lang.queryJS('settings.updates.newPreReleaseTitle') : Lang.queryJS('settings.updates.newReleaseTitle')
+        settingsUpdateTitle.innerHTML = `New ${isPrerelease(data.version) ? 'Pre-release' : 'Release'} Available`
         settingsUpdateChangelogCont.style.display = null
         settingsUpdateChangelogTitle.innerHTML = data.releaseName
         settingsUpdateChangelogText.innerHTML = data.releaseNotes
         populateVersionInformation(data.version, settingsUpdateVersionValue, settingsUpdateVersionTitle, settingsUpdateVersionCheck)
         
         if(process.platform === 'darwin'){
-            settingsUpdateButtonStatus(Lang.queryJS('settings.updates.downloadButton'), false, () => {
+            settingsUpdateButtonStatus('Download from GitHub<span style="font-size: 10px;color: gray;text-shadow: none !important;">Close the launcher and run the dmg to update.</span>', false, () => {
                 shell.openExternal(data.darwindownload)
             })
         } else {
-            settingsUpdateButtonStatus(Lang.queryJS('settings.updates.downloadingButton'), true)
+            settingsUpdateButtonStatus('Downloading..', true)
         }
     } else {
-        settingsUpdateTitle.innerHTML = Lang.queryJS('settings.updates.latestVersionTitle')
+        settingsUpdateTitle.innerHTML = 'You Are Running the Latest Version'
         settingsUpdateChangelogCont.style.display = 'none'
         populateVersionInformation(remote.app.getVersion(), settingsUpdateVersionValue, settingsUpdateVersionTitle, settingsUpdateVersionCheck)
-        settingsUpdateButtonStatus(Lang.queryJS('settings.updates.checkForUpdatesButton'), false, () => {
+        settingsUpdateButtonStatus('Check for Updates', false, () => {
             if(!isDev){
                 ipcRenderer.send('autoUpdateAction', 'checkForUpdate')
-                settingsUpdateButtonStatus(Lang.queryJS('settings.updates.checkingForUpdatesButton'), true)
+                settingsUpdateButtonStatus('Checking for Updates..', true)
             }
         })
     }
@@ -1565,17 +1551,17 @@ function prepareUpdateTab(data = null){
   * 
   * @param {boolean} first Whether or not it is the first load.
   */
-async function prepareSettings(first = false) {
+function prepareSettings(first = false) {
     if(first){
         setupSettingsTabs()
         initSettingsValidators()
         prepareUpdateTab()
     } else {
-        await prepareModsTab()
+        prepareModsTab()
     }
-    await initSettingsValues()
+    initSettingsValues()
     prepareAccountsTab()
-    await prepareJavaTab()
+    prepareJavaTab()
     prepareAboutTab()
 }
 

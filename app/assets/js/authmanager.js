@@ -15,6 +15,7 @@ const { RestResponseStatus } = require('helios-core/common')
 const { MojangRestAPI, mojangErrorDisplayable, MojangErrorCode } = require('helios-core/mojang')
 const { MicrosoftAuth, microsoftErrorDisplayable, MicrosoftErrorCode } = require('helios-core/microsoft')
 const { AZURE_CLIENT_ID }    = require('./ipcconstants')
+const { validateSelectedOfflineAccount } = require('./offline/authmanager-offline')
 
 const log = LoggerUtil.getLogger('AuthManager')
 
@@ -29,21 +30,13 @@ const log = LoggerUtil.getLogger('AuthManager')
  * @param {string} password The account password.
  * @returns {Promise.<Object>} Promise which resolves the resolved authenticated account object.
  */
-exports.addAccount = async function(username, password){
+exports.addMojangAccount = async function(username, password) {
     try {
-        if(username.endsWith('.lunex')){
-            let c = '';
-            for (let d = 0; d < 10; d++) {
-                c += 'abcdefghijklmnopqrstuvwxyz1234567890'[Math.floor(Math.random() * 'abcdefghijklmnopqrstuvwxyz1234567890'.length)];
-            }
-            const ret = ConfigManager.addMojangAuthAccount('nope_' + c, 'sry', username, username)
-            if(ConfigManager.getClientToken() == null){
-                ConfigManager.setClientToken('sry')
-            }
-            ConfigManager.save()
-            return ret
-        }else{
-            const session = await Mojang.authenticate(username, password, ConfigManager.getClientToken())
+        const response = await MojangRestAPI.authenticate(username, password, ConfigManager.getClientToken())
+        console.log(response)
+        if(response.responseStatus === RestResponseStatus.SUCCESS) {
+
+            const session = response.data
             if(session.selectedProfile != null){
                 const ret = ConfigManager.addMojangAuthAccount(session.selectedProfile.id, session.accessToken, username, session.selectedProfile.name)
                 if(ConfigManager.getClientToken() == null){
@@ -52,11 +45,16 @@ exports.addAccount = async function(username, password){
                 ConfigManager.save()
                 return ret
             } else {
-                throw new Error('NotPaidAccount')
+                return Promise.reject(mojangErrorDisplayable(MojangErrorCode.ERROR_NOT_PAID))
             }
+
+        } else {
+            return Promise.reject(mojangErrorDisplayable(response.mojangErrorCode))
         }
+        
     } catch (err){
-        return Promise.reject(err)
+        log.error(err)
+        return Promise.reject(mojangErrorDisplayable(MojangErrorCode.UNKNOWN))
     }
 }
 
@@ -309,7 +307,9 @@ async function validateSelectedMicrosoftAccount(){
 exports.validateSelected = async function(){
     const current = ConfigManager.getSelectedAccount()
 
-    if(current.type === 'microsoft') {
+    if (current.type === 'offline'){
+        return await validateSelectedOfflineAccount()
+    } else if(current.type === 'microsoft') {
         return await validateSelectedMicrosoftAccount()
     } else {
         return await validateSelectedMojangAccount()
