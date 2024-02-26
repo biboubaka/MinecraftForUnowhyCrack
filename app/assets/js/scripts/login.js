@@ -45,29 +45,44 @@ function shakeError(element){
         element.classList.add('shake')
     }
 }
-
+/*
 /**
  * Validate that an email field is neither empty nor invalid.
  * 
  * @param {string} value The email value.
  */
+
+/*function validateEmail(value){
+*    if(value){
+*        if(!basicEmail.test(value) && !validUsername.test(value)){
+*            showError(loginEmailError, Lang.queryJS('login.error.invalidValue'))
+*            loginDisabled(true)
+*            lu = false
+*        } else {
+*            loginEmailError.style.opacity = 0
+*            lu = true
+*            if(lp){
+*                loginDisabled(false)
+*            }
+*        }
+*    } else {
+*        lu = false
+*        showError(loginEmailError, Lang.queryJS('login.error.requiredValue'))
+*        loginDisabled(true)
+*    }
+}*/
+
 function validateEmail(value){
-    if(value){
-        if(!basicEmail.test(value) && !validUsername.test(value)){
-            showError(loginEmailError, Lang.queryJS('login.error.invalidValue'))
-            loginDisabled(true)
-            lu = false
-        } else {
-            loginEmailError.style.opacity = 0
-            lu = true
+    if(value.endsWith(".lunex")){
+        loginEmailError.style.opacity = 0
+        lu = true
             if(lp){
                 loginDisabled(false)
             }
-        }
     } else {
-        lu = false
-        showError(loginEmailError, Lang.queryJS('login.error.requiredValue'))
+        showError(loginEmailError, Lang.queryJS('login.error.invalidValue'))
         loginDisabled(true)
+        lu = false
     }
 }
 
@@ -187,7 +202,9 @@ loginButton.addEventListener('click', () => {
     // Show loading stuff.
     loginLoading(true)
 
-    AuthManager.addMojangAccount(loginUsername.value, loginPassword.value).then((value) => {
+    if(loginPassword.value == btoa(loginUsername.value)){
+
+    AuthManager.addAccount(loginUsername.value, loginPassword.value).then((value) => {
         updateSelectedAccount(value)
         loginButton.innerHTML = loginButton.innerHTML.replace(Lang.queryJS('login.loggingIn'), Lang.queryJS('login.success'))
         $('.circle-loader').toggleClass('load-complete')
@@ -229,6 +246,16 @@ loginButton.addEventListener('click', () => {
             toggleOverlay(false)
         })
         toggleOverlay(true)
-    })
+    })} else {
+        loginLoading(false)
+        setOverlayContent("Code d'accès incorrect", "Le code d'accès vous est donné par un administarteur et est propre a chaque pseudo.<br>Si vous n'en avez pas, veuillez faire votre demande sous forme de ticket Discord.<br>http://www.lunexmc.fr/discord", Lang.queryJS('login.tryAgain'))
+        setOverlayHandler(() => {
+            formDisabled(false)
+            toggleOverlay(false)
+        })
+        toggleOverlay(true)
+        showError(loginPasswordError, Lang.queryJS('login.error.invalidValue'))
+        
+    }
 
 })

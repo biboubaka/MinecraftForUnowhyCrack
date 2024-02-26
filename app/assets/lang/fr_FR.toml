@@ -20,11 +20,11 @@ newsErrorNoneSpan = "Aucune actualitée"
 
 [ejs.login]
 loginCancelText = "Annuler"
-loginSubheader = "MINECRAFT LOGIN"
+loginSubheader = "LUNEX LOGIN"
 loginEmailError = "* Invalid Value"
-loginEmailPlaceholder = "EMAIL OR USERNAME"
+loginEmailPlaceholder = "PSEUDO"
 loginPasswordError = "* REQUIS"
-loginPasswordPlaceholder = "MOT DE PASSE"
+loginPasswordPlaceholder = "CODE D'ACCÈS"
 loginForgotPasswordLink = "https://minecraft.net/password/forgot/"
 loginForgotPasswordText = "Mot de passe oublié"
 loginRememberMeText = "Se souvenir de moi?"
@@ -37,7 +37,7 @@ loginPasswordDisclaimer2 = "{appName} n'est pas affilié avec Mojang AB."
 [ejs.loginOptions]
 loginOptionsTitle = "Options de connexion"
 loginWithMicrosoft = "Se connecter avec Microsoft"
-loginWithMojang = "Se connecter avec Mojang"
+loginWithMojang = "Se connecter en crack"
 cancelButton = "Annuler"
 
 [ejs.overlay]
@@ -62,8 +62,8 @@ tabAccountHeaderText = "Réglages du compte"
 tabAccountHeaderDesc = "Ajouter des comptes ou géres des comptes existants."
 microsoftAccount = "Microsoft"
 addMicrosoftAccount = "+ Ajouter un compte Microsoft"
-mojangAccount = "Mojang"
-addMojangAccount = "+ Ajouter un compte Mojang"
+mojangAccount = "Crack"
+addMojangAccount = "+ Ajouter un compte crack"
 minecraftTabHeaderText = "Réglages de Minecraft"
 minecraftTabHeaderDesc = "Option liées au lancement du jeu."
 gameResolutionTitle = "Résolution du jeu"
@@ -137,11 +137,11 @@ success = "SUCCÈS"
 tryAgain = "Réessayer"
 
 [js.login.error]
-invalidValue = "* Valeur invalide"
+invalidValue = "* Le pseudo doit ce finir en '.lunex'."
 requiredValue = "* Requis"
 
 [js.login.error.unknown]
-title = "Erreur inconnue pendent la connexion"
+title = "Code d'accès incorect"
 desc = "Une erreur inconnue est survenue. Veuillez ouvrir un ticket de support sur Discord"
 
 [js.landing.launch]

@@ -77,8 +77,8 @@ function resolveSelectedRAM(ram) {
 const DEFAULT_CONFIG = {
     settings: {
         game: {
-            resWidth: 1280,
-            resHeight: 720,
+            resWidth: 1920,
+            resHeight: 1080,
             fullscreen: false,
             autoConnect: true,
             launchDetached: true
@@ -271,6 +271,17 @@ exports.getClientToken = function(){
  */
 exports.setClientToken = function(clientToken){
     config.clientToken = clientToken
+}
+
+exports.addAuthAccount = function(uuid, accessToken, username, displayName){
+    config.selectedAccount = uuid
+    config.authenticationDatabase[uuid] = {
+        accessToken,
+        username: username.trim(),
+        uuid: uuid.trim(),
+        displayName: displayName.trim()
+    }
+    return config.authenticationDatabase[uuid]
 }
 
 /**
