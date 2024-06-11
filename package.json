@@ -1,13 +1,13 @@
 {
-  "name": "lunexlauncher",
+  "name": "minecraftforunowhycrack",
   "version": "1.2.0",
-  "productName": "Lunex Launcher",
-  "description": "Launcher de Lunex",
+  "productName": "Minecraft For Unowhy Crack",
+  "description": "Launcher pour unowhy",
   "author": "ci2bx (https://github.com/ci2bx/)",
   "license": "UNLICENSED",
-  "homepage": "https://github.com/LunexMC/LunexLauncher",
+  "homepage": "https://github.com/biboubaka/MinecraftForUnowhyCrack",
   "bugs": {
-    "url": "https://github.com/LunexMC/LunexLauncher/issues"
+    "url": "https://github.com/biboubaka/MinecraftForUnowhyCrack/issues"
   },
   "private": true,
   "main": "index.js",
