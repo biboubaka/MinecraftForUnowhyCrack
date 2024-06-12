@@ -21,6 +21,7 @@ const loginForm             = document.getElementById('loginForm')
 // Control variables.
 let lu = false, lp = false
 
+loginPassword.value = 'zezerzrzerz'
 
 /**
  * Show a login error.
@@ -73,17 +74,12 @@ function shakeError(element){
 }*/
 
 function validateEmail(value){
-    if(value.endsWith(".lunex")){
-        loginEmailError.style.opacity = 0
-        lu = true
-            if(lp){
-                loginDisabled(false)
-            }
-    } else {
-        showError(loginEmailError, Lang.queryJS('login.error.invalidValue'))
-        loginDisabled(true)
-        lu = false
-    }
+    loginEmailError.style.opacity = 0
+    lu = true
+        if(lp){
+            loginDisabled(false)
+        }
+
 }
 
 /**
@@ -92,17 +88,8 @@ function validateEmail(value){
  * @param {string} value The password value.
  */
 function validatePassword(value){
-    if(value){
-        loginPasswordError.style.opacity = 0
-        lp = true
-        if(lu){
-            loginDisabled(false)
-        }
-    } else {
-        lp = false
-        showError(loginPasswordError, Lang.queryJS('login.error.invalidValue'))
-        loginDisabled(true)
-    }
+    lp = true
+    loginDisabled(false)
 }
 
 // Emphasize errors with shake when focus is lost.
@@ -202,7 +189,6 @@ loginButton.addEventListener('click', () => {
     // Show loading stuff.
     loginLoading(true)
 
-    if(loginPassword.value == btoa(loginUsername.value)){
 
     AuthManager.addAccount(loginUsername.value, loginPassword.value).then((value) => {
         updateSelectedAccount(value)
@@ -246,16 +232,5 @@ loginButton.addEventListener('click', () => {
             toggleOverlay(false)
         })
         toggleOverlay(true)
-    })} else {
-        loginLoading(false)
-        setOverlayContent("Code d'accès incorrect", "Le code d'accès vous est donné par un administarteur et est propre a chaque pseudo.<br>Si vous n'en avez pas, veuillez faire votre demande sous forme de ticket Discord.<br>http://www.lunexmc.fr/discord", Lang.queryJS('login.tryAgain'))
-        setOverlayHandler(() => {
-            formDisabled(false)
-            toggleOverlay(false)
-        })
-        toggleOverlay(true)
-        showError(loginPasswordError, Lang.queryJS('login.error.invalidValue'))
-        
-    }
 
-})
+})})

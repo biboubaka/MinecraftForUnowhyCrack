@@ -20,17 +20,17 @@ newsErrorNoneSpan = "Aucune actualitée"
 
 [ejs.login]
 loginCancelText = "Annuler"
-loginSubheader = "LUNEX LOGIN"
+loginSubheader = "LOGIN"
 loginEmailError = "* Invalid Value"
 loginEmailPlaceholder = "PSEUDO"
 loginPasswordError = "* REQUIS"
-loginPasswordPlaceholder = "CODE D'ACCÈS"
-loginForgotPasswordLink = "https://minecraft.net/password/forgot/"
-loginForgotPasswordText = "Mot de passe oublié"
+loginPasswordPlaceholder = "VERIFICATION"
+loginForgotPasswordLink = "#"
+loginForgotPasswordText = "Ce code n'est pas a retenir"
 loginRememberMeText = "Se souvenir de moi?"
 loginButtonText = "CONNECTION"
-loginNeedAccountLink = "https://minecraft.net/store/minecraft-java-edition/"
-loginNeedAccountText = "Besoin d'un compte ?"
+loginNeedAccountLink = "#"
+loginNeedAccountText = " "
 loginPasswordDisclaimer1 = "Votre mot de passe est directement envoyé a Mojang et n'est jamais stocké."
 loginPasswordDisclaimer2 = "{appName} n'est pas affilié avec Mojang AB."
 
@@ -41,7 +41,7 @@ loginWithMojang = "Se connecter en crack"
 cancelButton = "Annuler"
 
 [ejs.overlay]
-serverSelectHeader = "Serveurs disponibles"
+serverSelectHeader = "Versions disponibles"
 serverSelectConfirm = "Choisir"
 serverSelectCancel = "Annuler"
 accountSelectHeader = "Choisir un compte"
@@ -68,7 +68,7 @@ minecraftTabHeaderText = "Réglages de Minecraft"
 minecraftTabHeaderDesc = "Option liées au lancement du jeu."
 gameResolutionTitle = "Résolution du jeu"
 launchFullscreenTitle = "Lancer en plein écran"
-autoConnectTitle = "Se connecter automatiquement à Lunex."
+autoConnectTitle = "Se connecter automatiquement à un serveur."
 launchDetachedTitle = "Lancer le jeu détaché du launcher."
 launchDetachedDesc = "Si le jeu n'est pas détaché, fermer le launcher fermera aussi le jeu."
 tabModsHeaderText = "Réglages des mods"
@@ -137,17 +137,17 @@ success = "SUCCÈS"
 tryAgain = "Réessayer"
 
 [js.login.error]
-invalidValue = "* Le pseudo doit ce finir en '.lunex'."
+invalidValue = "* Requis"
 requiredValue = "* Requis"
 
 [js.login.error.unknown]
 title = "Code d'accès incorect"
-desc = "Une erreur inconnue est survenue. Veuillez ouvrir un ticket de support sur Discord"
+desc = "Une erreur inconnue est survenue. Ouvrez la console pour plus de détails."
 
 [js.landing.launch]
 pleaseWait = "Veuillez patientez.."
 failureTitle = "Erreur de lancement"
-failureText = "Veuillez ouvrir un ticket de support sur Discord"
+failureText = "Ouvrez la console pour plus de détails"
 okay = "Ok"
 
 [js.landing.selectedAccount]
@@ -165,14 +165,14 @@ players = "JOUEURS"
 [js.landing.systemScan]
 checking = "Verification de votre système.."
 noCompatibleJava = "Aucune version<br>compatible de Java"
-installJavaMessage = "Pour jouer sur Lunex, vous avez besoin d'une installation 64-bit de Java {major}. Voulez-vous l'installez ?"
+installJavaMessage = "Pour jouer à Minecraft, vous avez besoin d'une installation 64-bit de Java {major}. Voulez-vous l'installez ?"
 installJava = "Installer Java"
 installJavaManually = "Installer Manuellement"
 javaDownloadPrepare = "Perparation du téléchargement de Java..."
 javaDownloadFailureTitle = "Erreur pendant le téléchargement de Java"
-javaDownloadFailureText = "Veuillez ouvrir un ticket de support sur Discord"
+javaDownloadFailureText = "Ouvrez la console pour plus de détails."
 javaRequired = "Java est requis<br>pour lancer le jeu"
-javaRequiredMessage = 'Pour jouer sur Lunex, vous avez besoin d une installation 64-bit de Java<br><br>Lisez notre <a href="https://github.com/dscalzi/HeliosLauncher/wiki/Java-Management#manually-installing-a-valid-version-of-java">guide sur Java</a> pour l installez manuellement.'
+javaRequiredMessage = 'Pour jouer à Minecraft, vous avez besoin d une installation 64-bit de Java<br><br>Lisez notre <a href="https://github.com/dscalzi/HeliosLauncher/wiki/Java-Management#manually-installing-a-valid-version-of-java">guide sur Java</a> pour l installez manuellement.'
 javaRequiredDismiss = "J'ai compris"
 javaRequiredCancel = "Retour en arrière, j'ai peur."
 
@@ -183,19 +183,19 @@ extractingJava = "Extraction de Java"
 javaInstalled = "Java installé!"
 
 [js.landing.dlAsync]
-loadingServerInfo = "Chargement des informations de Lunex..."
+loadingServerInfo = "Chargement des informations de Minecraft..."
 fatalError = "Erreur fatale"
-unableToLoadDistributionIndex = "Erreur lors du chargement de l'index des ressources. Veuillez ouvrir un ticket de support sur Discord."
+unableToLoadDistributionIndex = "Erreur lors du chargement de l'index des ressources. Ouvrez la console pour plus de détails."
 pleaseWait = "Veuillez patientez..."
 errorDuringLaunchTitle = "Erreur au lancement"
-seeConsoleForDetails = "Veuillez ouvrir un ticket de support sur Discord."
+seeConsoleForDetails = "Ouvrez la console pour plus de détails."
 validatingFileIntegrity = "Validation de l'intégritée des fichiers..."
 errorDuringFileVerificationTitle = "Erreur lors de la vérification"
 downloadingFiles = "Téléchargement des fichiers..."
 errorDuringFileDownloadTitle = "Erreur lors du téléchargement des fichiers"
 preparingToLaunch = "Préparation au lancement.."
 launchingGame = "Lancement du jeu..."
-launchWrapperNotDownloaded = "Le fichier principal, LaunchWrapper, n'est pas téléchargé proprement. Le jeu ne peut donc pas se lancer.<br><br>Pour résoudre ce problème, désactivez temporairement votre logiciel antivirus et relancez le jeu.<br><br>Si vous avez le temps, veuillez ouvrir un ticket de support sur Discord"
+launchWrapperNotDownloaded = "Le fichier principal, LaunchWrapper, n'est pas téléchargé proprement. Le jeu ne peut donc pas se lancer.<br><br>Pour résoudre ce problème, désactivez temporairement votre logiciel antivirus et relancez le jeu.<br><br>Ouvrez la console pour plus de détails."
 doneEnjoyServer = "Bon jeu !"
 checkConsoleForDetails = "Please check the console (CTRL + Shift + i) for more details."
 
@@ -265,7 +265,7 @@ checkingForUpdatesButton = "Vérification des mises à jour..."
 
 [js.uibinder.startup]
 fatalErrorTitle = "Erreur fatale lors du téléchargement de l'index des ressources"
-fatalErrorMessage = "La connexion à nos serveurs n'a pas pu être établiee pour télécharger les ressources. Aucune copie locale n'a été trouvée. <br><br>L'index des ressources est un fichier essentiel qui vous donnes les dernière informations de Lunex. Le launcher ne peut pas démmarer sans. Verifier votre connexion a Internet et relancer le launcher."
+fatalErrorMessage = "La connexion à nos serveurs n'a pas pu être établiee pour télécharger les ressources. Aucune copie locale n'a été trouvée. <br><br>L'index des ressources est un fichier essentiel qui vous donnes les dernière informations de Miceraft. Le launcher ne peut pas démmarer sans. Verifier votre connexion a Internet et relancer le launcher."
 closeButton = "Fermer"
 
 [js.uibinder.validateAccount]

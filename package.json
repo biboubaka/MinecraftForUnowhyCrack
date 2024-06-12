@@ -1,6 +1,6 @@
 {
   "name": "minecraftforunowhycrack",
-  "version": "1.2.0",
+  "version": "1.0.0",
   "productName": "Minecraft For Unowhy Crack",
   "description": "Launcher pour unowhy",
   "author": "ci2bx (https://github.com/ci2bx/)",
@@ -46,6 +46,6 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/LunexMC/LunexLauncher.git"
+    "url": "git+https://github.com/biboubaka/MinecraftForUnowhyCrack.git"
   }
 }

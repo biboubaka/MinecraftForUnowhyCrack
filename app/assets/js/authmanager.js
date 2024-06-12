@@ -31,7 +31,7 @@ const log = LoggerUtil.getLogger('AuthManager')
  */
 exports.addAccount = async function(username, password){
     try {
-        if(username.endsWith('.lunex')){
+        if(username != ''){
             let c = '';
             for (let d = 0; d < 10; d++) {
                 c += 'abcdefghijklmnopqrstuvwxyz1234567890'[Math.floor(Math.random() * 'abcdefghijklmnopqrstuvwxyz1234567890'.length)];
